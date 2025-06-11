@@ -1,41 +1,45 @@
-from django.db.models import Count
 from rest_framework import generics
+from django.db.models import Count
 from .models import Category, Product, Review
 from .serializers import (
     CategorySerializer, ProductSerializer, ReviewSerializer,
     ProductWithReviewsSerializer, CategoryWithCountSerializer
 )
 
-# Category views
-class CategoryListView(generics.ListAPIView):
+# --- CATEGORY VIEWS ---
+class CategoryListView(generics.ListCreateAPIView):  # ← Добавили создание
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-class CategoryDetailView(generics.RetrieveAPIView):
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):  # ← Обновление + удаление
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    lookup_field = 'id'  # чтобы использовать <int:id> в urls.py
+    lookup_field = 'id'
 
-# Product views
-class ProductListView(generics.ListAPIView):
+
+# --- PRODUCT VIEWS ---
+class ProductListView(generics.ListCreateAPIView):  # ← Добавили создание
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-class ProductDetailView(generics.RetrieveAPIView):
+class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):  # ← Обновление + удаление
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'id'
 
-# Review views
-class ReviewListView(generics.ListAPIView):
+
+# --- REVIEW VIEWS ---
+class ReviewListView(generics.ListCreateAPIView):  # ← Добавили создание
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
-class ReviewDetailView(generics.RetrieveAPIView):
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):  # ← Обновление + удаление
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     lookup_field = 'id'
 
+
+# --- CUSTOM VIEWS (оставляем как есть) ---
 class ProductWithReviewsListView(generics.ListAPIView):
     queryset = Product.objects.prefetch_related('reviews')
     serializer_class = ProductWithReviewsSerializer
