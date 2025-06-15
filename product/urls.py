@@ -26,8 +26,3 @@ urlpatterns = [
     path('reviews/', ReviewListView.as_view(), name='review-list'),
     path('reviews/<int:id>/', ReviewDetailView.as_view(), name='review-detail'),
 ]
-
-
-
-
-

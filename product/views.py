@@ -6,40 +6,33 @@ from .serializers import (
     ProductWithReviewsSerializer, CategoryWithCountSerializer
 )
 
-# --- CATEGORY VIEWS ---
-class CategoryListView(generics.ListCreateAPIView):  # ← Добавили создание
+class CategoryListView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):  # ← Обновление + удаление
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     lookup_field = 'id'
 
-
-# --- PRODUCT VIEWS ---
-class ProductListView(generics.ListCreateAPIView):  # ← Добавили создание
+class ProductListView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):  # ← Обновление + удаление
+class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = 'id'
 
-
-# --- REVIEW VIEWS ---
-class ReviewListView(generics.ListCreateAPIView):  # ← Добавили создание
+class ReviewListView(generics.ListCreateAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
 
-class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):  # ← Обновление + удаление
+class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     lookup_field = 'id'
 
-
-# --- CUSTOM VIEWS (оставляем как есть) ---
 class ProductWithReviewsListView(generics.ListAPIView):
     queryset = Product.objects.prefetch_related('reviews')
     serializer_class = ProductWithReviewsSerializer

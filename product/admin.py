@@ -3,16 +3,16 @@ from .models import Category, Product, Review
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')  # какие поля показывать в списке
-    search_fields = ('name',)      # поиск по имени
+    list_display = ('id', 'name')
+    search_fields = ('name',)
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'price', 'category')
-    list_filter = ('category',)    # фильтр по категории
+    list_filter = ('category',)
     search_fields = ('title', 'description')
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('id', 'product', 'text')
+    list_display = ('id', 'product', 'text', 'stars')
     search_fields = ('text',)
