@@ -1,19 +1,23 @@
 from rest_framework import generics, status
-from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework.decorators import api_view
+from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
+
 from .serializers import UserRegisterSerializer, ConfirmCodeSerializer, UserAuthSerializer
 
+
 class RegisterView(generics.CreateAPIView):
+
     queryset = User.objects.all()
     serializer_class = UserRegisterSerializer
     permission_classes = [AllowAny]
 
+
 class ConfirmUserView(APIView):
+
     permission_classes = [AllowAny]
 
     def post(self, request):
@@ -23,14 +27,20 @@ class ConfirmUserView(APIView):
             return Response({"message": "Пользователь подтвержден!"})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-@api_view(['POST'])
-def authorization_api_view(request):
-    serializer = UserAuthSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
 
-    user = authenticate(**serializer.validated_data)
-    if user:
-        token, _ = Token.objects.get_or_create(user=user)
-        return Response(data={'key': token.key})
-    return Response({'error': 'Неверные данные или пользователь не активирован'}, status=status.HTTP_401_UNAUTHORIZED)
+class LoginView(APIView):
+    """
+    Колдонуучу логини (token алуу).
+    POST /api/v1/login/
+    """
+    permission_classes = [AllowAny]
 
+    def post(self, request):
+        serializer = UserAuthSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = authenticate(**serializer.validated_data)
+        if user and user.is_active:
+            token, _ = Token.objects.get_or_create(user=user)
+            return Response({'key': token.key})
+        return Response({'error': 'Неверные данные или пользователь не активирован'}, status=status.HTTP_401_UNAUTHORIZED)
