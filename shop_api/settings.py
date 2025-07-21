@@ -1,6 +1,7 @@
 from pathlib import Path
-import os
 from dotenv import load_dotenv
+import os
+
 
 load_dotenv()
 
@@ -17,11 +18,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
     'rest_framework.authtoken',
-
     'product',
+    'drf_yasg',
     'users',
 ]
 
@@ -44,6 +44,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -51,6 +52,8 @@ TEMPLATES = [
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = 'shop_api.wsgi.application'
 
@@ -71,6 +74,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',},
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
+
+
+AUTH_USER_MODEL = 'users.CustomUser'
+
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

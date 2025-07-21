@@ -1,7 +1,11 @@
-from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import UserConfirmationCode
+from django.contrib.auth import get_user_model
+from .models import ConfirmationCode
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 import random
+
+User = get_user_model()
+
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,14 +14,15 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            username=validated_data['username'],
+            username=validated_data.get('username'),
             email=validated_data.get('email'),
             password=validated_data['password'],
             is_active=False
         )
         code = f"{random.randint(100000, 999999)}"
-        UserConfirmationCode.objects.create(user=user, code=code)
+        ConfirmationCode.objects.create(user=user, code=code)
         return user
+
 
 class ConfirmCodeSerializer(serializers.Serializer):
     username = serializers.CharField()
