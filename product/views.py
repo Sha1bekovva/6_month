@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from .models import Product
 from .serializers import ProductSerializer, ProductWithReviewsSerializer
 from .permissions import IsModeratorPermission
@@ -8,6 +9,12 @@ class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated, IsModeratorPermission]
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        if not user.is_adult():
+            raise PermissionDenied(detail="Вам должно быть 18 лет, чтобы создать продукт.")
+        serializer.save()
 
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
