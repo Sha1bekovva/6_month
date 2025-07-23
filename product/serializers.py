@@ -58,10 +58,3 @@ class ProductWithReviewsSerializer(serializers.ModelSerializer):
         if reviews.exists():
             return round(sum([r.stars for r in reviews]) / reviews.count(), 2)
         return 0.0
-
-class CategoryWithCountSerializer(serializers.ModelSerializer):
-    products_count = serializers.IntegerField()
-
-    class Meta:
-        model = Category
-        fields = ('id', 'name', 'products_count')

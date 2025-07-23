@@ -1,8 +1,8 @@
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from .models import ConfirmationCode
+from django.contrib.auth import get_user_model
+from django.core.cache import cache
 import random
+import string
 
 User = get_user_model()
 
@@ -19,8 +19,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             birthday=validated_data.get('birthday'),
             is_active=False
         )
-        code = f"{random.randint(100000, 999999)}"
-        ConfirmationCode.objects.create(user=user, code=code)
+
+        # Генерация и сохранение кода в Redis
+        code = ''.join(random.choices(string.digits, k=6))
+        cache_key = f"confirmation_code:{user.username}"
+        cache.delete(cache_key)
+        cache.set(cache_key, code, timeout=300)  # 5 минут
+
         return user
 
 class ConfirmCodeSerializer(serializers.Serializer):
@@ -30,27 +35,18 @@ class ConfirmCodeSerializer(serializers.Serializer):
     def validate(self, data):
         try:
             user = User.objects.get(username=data['username'])
-            if not hasattr(user, 'confirmation'):
-                raise serializers.ValidationError("Код не найден.")
-            if user.confirmation.code != data['code']:
-                raise serializers.ValidationError("Неверный код.")
         except User.DoesNotExist:
             raise serializers.ValidationError("Пользователь не найден.")
+
+        cache_key = f"confirmation_code:{user.username}"
+        cached_code = cache.get(cache_key)
+        if not cached_code or cached_code != data['code']:
+            raise serializers.ValidationError("Неверный или просроченный код.")
+
+        self.user = user
         return data
 
     def save(self, **kwargs):
-        user = User.objects.get(username=self.validated_data['username'])
-        user.is_active = True
-        user.save()
-        user.confirmation.delete()
-
-class UserAuthSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
-
-class CustomTokenObtainSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token['birthday'] = user.birthday.isoformat() if user.birthday else None
-        return token
+        self.user.is_active = True
+        self.user.save()
+        cache.delete(f"confirmation_code:{self.user.username}")

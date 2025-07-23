@@ -1,13 +1,12 @@
-# Python
+#python
 *.pyc
 __pycache__/
 
-# Виртуалдык чөйрө
 .venv/
 env/
 venv/
 
-# Django базасы
+# Django
 db.sqlite3
 
 # VS Code

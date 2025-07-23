@@ -12,7 +12,8 @@ class ProductListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
-        if not user.is_adult():
+        # Проверяем метод is_adult у пользователя (у вас он должен быть в кастомном user)
+        if not hasattr(user, 'is_adult') or not user.is_adult():
             raise PermissionDenied(detail="Вам должно быть 18 лет, чтобы создать продукт.")
         serializer.save()
 

@@ -14,3 +14,5 @@ PyYAML==6.0.2
 sqlparse==0.5.3
 uritemplate==4.2.0
 uv==0.7.20
+requests>=2.31.0
+

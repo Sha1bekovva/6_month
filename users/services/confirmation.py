@@ -1,0 +1,35 @@
+import random
+from datetime import timedelta
+from django.utils import timezone
+from users.models import ConfirmationCode
+
+def generate_confirmation_code():
+    """Генерируем 6-значный числовой код"""
+    return f"{random.randint(100000, 999999)}"
+
+def create_confirmation_code(user):
+    """Создаем и сохраняем новый код подтверждения для пользователя"""
+    code = generate_confirmation_code()
+    confirmation = ConfirmationCode.objects.create(user=user, code=code)
+    return confirmation
+
+def check_confirmation_code(user, code):
+    """
+    Проверяем код:
+    - существует ли такой для данного пользователя,
+    - не использован ли,
+    - не истек ли (например, 15 минут)
+    """
+    try:
+        confirmation = ConfirmationCode.objects.get(user=user, code=code, is_used=False)
+    except ConfirmationCode.DoesNotExist:
+        return False
+
+    expiration_time = confirmation.created_at + timedelta(minutes=15)
+    if timezone.now() > expiration_time:
+        return False
+
+    # Помечаем код как использованный
+    confirmation.is_used = True
+    confirmation.save()
+    return True

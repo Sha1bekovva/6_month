@@ -2,7 +2,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,17 +18,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+
     'rest_framework',
     'rest_framework.authtoken',
+
     'product',
-    'drf_yasg',
     'users',
+
+    'drf_yasg',
+
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
 ]
-
 
 SITE_ID = 1
 
@@ -38,8 +40,8 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',  # От allauth
 )
 
-LOGIN_REDIRECT_URL = '/'         # Куда перенаправлять после входа
-LOGOUT_REDIRECT_URL = '/accounts/login/'  # Куда после выхода
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -56,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'shop_api.urls'
@@ -76,9 +79,17 @@ TEMPLATES = [
     },
 ]
 
-
-
 WSGI_APPLICATION = 'shop_api.wsgi.application'
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
 
 DATABASES = {
     'default': {
@@ -98,9 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',},
 ]
 
-
 AUTH_USER_MODEL = 'users.CustomUser'
-
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
