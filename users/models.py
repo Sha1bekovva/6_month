@@ -6,7 +6,10 @@ from datetime import date
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=50, null=True, blank=True)
-    birthday = models.DateField(null=True, blank=True)  # Добавлено поле
+    first_name = models.CharField(max_length=150, blank=True)  # Новое
+    last_name = models.CharField(max_length=150, blank=True)   # Новое
+    avatar = models.URLField(null=True, blank=True)            # Новое
+    birthday = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
@@ -24,6 +27,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         today = date.today()
         age = today.year - self.birthday.year - ((today.month, today.day) < (self.birthday.month, self.birthday.day))
         return age >= 18
+
 
 class ConfirmationCode(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='confirmation')
