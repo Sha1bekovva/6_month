@@ -4,12 +4,15 @@ from rest_framework import status
 from django.db import transaction
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.views import TokenObtainPairView
+from users.tasks import send_otp_email
 from .serializers import (
     UserRegisterSerializer,
     ConfirmCodeSerializer,
     UserAuthSerializer,
     CustomTokenObtainSerializer
 )
+send_otp_email.delay(email, code)
+
 
 class RegisterView(CreateAPIView):
     serializer_class = UserRegisterSerializer
