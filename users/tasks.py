@@ -12,7 +12,7 @@ def save_user_action(user_id, action):
 def send_otp_email(user_email, code):
     subject = "Ваш код подтверждения"
     message = f"Здравствуйте! Ваш код подтверждения: {code}"
-    from_email = "sajbekovaz33@gmail.com"  # замени на свой email
+    from_email = "sajbekovaz33@gmail.com"
     send_mail(subject, message, from_email, [user_email])
 
 @shared_task
